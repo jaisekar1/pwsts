@@ -13,9 +13,28 @@ from modules.visualization import render_dashboard
 from modules.live_sniffer import start_sniffing
 
 
-# -----------------------------------
+# ---------------------------------------------------
+# PWA CONFIGURATION (ADD AT TOP)
+# ---------------------------------------------------
+st.markdown("""
+<link rel="manifest" href="/static/manifest.json">
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/service-worker.js')
+        .then(function(reg) {
+            console.log("Service Worker Registered", reg);
+        })
+        .catch(function(err) {
+            console.log("Service Worker Failed", err);
+        });
+}
+</script>
+""", unsafe_allow_html=True)
+
+
+# ---------------------------------------------------
 # PAGE CONFIG
-# -----------------------------------
+# ---------------------------------------------------
 st.set_page_config(layout="wide")
 st.title("🛡 AI-Powered Network Traffic Intelligence Platform")
 
@@ -23,9 +42,9 @@ st.title("🛡 AI-Powered Network Traffic Intelligence Platform")
 is_cloud = os.getenv("STREAMLIT_SHARING_MODE") is not None
 
 
-# -----------------------------------
+# ---------------------------------------------------
 # LIVE MONITORING
-# -----------------------------------
+# ---------------------------------------------------
 st.header("🔴 Live Network Monitoring")
 
 if st.button("Start Live Monitoring"):
@@ -50,9 +69,9 @@ if st.button("Start Live Monitoring"):
 st.divider()
 
 
-# -----------------------------------
+# ---------------------------------------------------
 # PCAP FILE UPLOAD
-# -----------------------------------
+# ---------------------------------------------------
 st.header("📂 PCAP File Analysis")
 
 uploaded = st.file_uploader("Upload PCAP File", type=["pcap"])
@@ -74,7 +93,7 @@ if uploaded:
     # Run All Models
     results = run_all_models(features)
 
-    # Add Results to DataFrame (safe check)
+    # Add Results to DataFrame (safe checks)
     if "isolation_forest" in results:
         df["Anomaly_Label"] = results["isolation_forest"]
 
@@ -88,9 +107,9 @@ if uploaded:
     # Dashboard Visualization
     render_dashboard(df, results)
 
-    # -----------------------------------
+    # ---------------------------------------------------
     # Explainable AI Section
-    # -----------------------------------
+    # ---------------------------------------------------
     st.header("📊 Explainable AI")
 
     if "random_forest_model" in results:
